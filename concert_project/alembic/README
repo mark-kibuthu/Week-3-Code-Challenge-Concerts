@@ -1,0 +1,99 @@
+Generic single-database configuration.
+
+# Setup(1)
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, Band, Venue, Concert
+
+# Set up database connection and session
+engine = create_engine('sqlite:///concerts.db')
+Base.metadata.create_all(engine)  # Ensure tables are created
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Create a band and a venue
+band = Band(name="The Rolling Stones", hometown="London")
+venue = Venue(title="Wembley Stadium", city="London")
+
+# Play a concert
+concert = band.play_in_venue(venue, "2024-12-31")
+session.add_all([band, venue, concert])
+session.commit()
+
+# Test methods
+print("Introduction:", concert.introduction())  
+# Expected output: "Hello London!!!!! We are The Rolling Stones and we're from London"
+
+# Test Band's venues method
+print("Band's venues:", band.venues())  
+# Expected output: [<Venue(title='Wembley Stadium', city='London')>]
+
+# Test Venue's bands method
+print("Venue's bands:", venue.bands())  
+# Expected output: [<Band(name='The Rolling Stones', hometown='London')>]
+
+# Test Venue's concert_on method
+print("Concert on '2024-12-31':", venue.concert_on("2024-12-31"))  
+# Expected output: <Concert(date='2024-12-31', band_id=..., venue_id=...)>
+
+# Test Band's most_performances method
+print("Band with most performances:", Band.most_performances(session))  
+# Expected output: <Band(name='The Rolling Stones', hometown='London')> or None if no band
+
+# Test Venue's most_frequent_band method
+print("Most frequent band at venue:", venue.most_frequent_band())  
+# Expected output: <Band(name='The Rolling Stones', hometown='London')>
+
+# Cleanup
+session.close()
+
+
+#setup(2)
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, Band, Venue, Concert
+
+# Set up database connection and session
+engine = create_engine('sqlite:///concerts.db')
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Create tables
+Base.metadata.create_all(engine)
+
+# Create a band and a venue
+band = Band(name="The Rolling Stones", hometown="London")
+venue = Venue(title="Wembley Stadium", city="London")
+
+# Play a concert
+concert = band.play_in_venue(venue, "2024-12-31")
+session.add_all([band, venue, concert])
+session.commit()
+
+# Test methods
+def test_band_concerts():
+    band_concerts = band.concerts
+    assert len(band_concerts) == 1, "Band should have 1 concert."
+    assert band_concerts[0] == concert, "The concert should match the scheduled concert."
+
+def test_venue_bands():
+    bands_at_venue = venue.bands()
+    assert len(bands_at_venue) == 1, "Venue should have 1 band."
+    assert bands_at_venue[0] == band, "The band at the venue should be The Rolling Stones."
+
+def test_concert_introduction():
+    introduction = concert.introduction()
+    expected_intro = "Hello London!!!!! We are The Rolling Stones and we're from London"
+    assert introduction == expected_intro, f"Introduction should be '{expected_intro}'"
+
+def test_venue_most_frequent_band():
+    most_frequent_band = venue.most_frequent_band()
+    assert most_frequent_band == band, "The most frequent band should be The Rolling Stones."
+
+# Run tests
+test_band_concerts()
+test_venue_bands()
+test_concert_introduction()
+test_venue_most_frequent_band()
+
+print("All tests passed.")

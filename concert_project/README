@@ -1,0 +1,37 @@
+# Concert Management System
+
+This project is a simple concert management system using SQLAlchemy and SQLite. It models bands, venues, and concerts, and provides methods for querying and managing these entities.
+
+## Features
+
+- **Band**: Represents a musical band with methods to manage concerts and venues.
+- **Venue**: Represents a concert venue with methods to find bands and concerts.
+- **Concert**: Represents a concert, linking a band and a venue on a specific date.
+
+
+## Setup Instructions
+1. Install dependencies:
+    ```
+    pip install sqlalchemy alembic
+    ```
+2. Run the migrations:
+    ```
+    alembic upgrade head
+    ```
+
+## Usage
+- Create a new band:
+    ```python
+    band = Band(name="The Beatles", hometown="Liverpool")
+    ```
+- Create a concert:
+    ```python
+    concert = band.play_in_venue(venue, "2024-12-31")
+    ```
+Run the test script to verify that the models and methods work as expected:
+
+bash
+
+python test_script.py
+
+This script creates a band, a venue, and a concert, then tests various methods to ensure they work correctly.
